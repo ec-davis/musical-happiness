@@ -2,7 +2,7 @@
 const taskTitleInput = $('#taskTitleInput');
 const taskDueDateInput = $('#taskDueDateInput');
 const taskDescriptionInput = $('#taskDescriptionInput');
-//const addTaskModel = $('#addTaskModal');
+const addTaskModal = $('#addTaskModal');
 const saveTaskBtn = $('#saveTaskBtn');
 
 // Retrieve tasks and nextId from localStorage
@@ -31,22 +31,30 @@ function handleAddTask(event){
     console.log("handleAddTask");    
     
     event.preventDefault();
-        const taskTitle = taskTitleInput.val();
-        const taskDueDate = taskDueDateInput.val();
-        const taskDescription = taskDescriptionInput.val();
-    
-        const newTask = {
-            title: taskTitle,
-            dueDate: taskDueDate,
-            description: taskDescription
-        }
-    
-        let tasksArray = JSON.parse(localStorage.getItem('tasksArray'));
-        if (!tasksArray)
-            tasksArray = [];
-        tasksArray.push(newTask);
-        localStorage.setItem('tasksArray', JSON.stringify(tasksArray));
+    const taskTitle = taskTitleInput.val();
+    const taskDueDate = taskDueDateInput.val();
+    const taskDescription = taskDescriptionInput.val();
+
+    const newTask = {
+        title: taskTitle,
+        dueDate: taskDueDate,
+        description: taskDescription
+    }
+
+    let tasksArray = JSON.parse(localStorage.getItem('tasksArray'));
+    if (!tasksArray)
+        tasksArray = [];
+    tasksArray.push(newTask);
+    localStorage.setItem('tasksArray', JSON.stringify(tasksArray));
+
+    // clear the inputs and hide the dialog
+    taskTitleInput.val('');
+    taskDueDateInput.val('');
+    taskDescriptionInput.val('');
+    addTaskModal.modal('hide');       
 }
+
+
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
