@@ -20,7 +20,7 @@
     <h1 class="display-3">Task Board</h1>
     <p class="lead">A simple Kanban board for task management</p>
   </header>
-  <div class="modal" tabindex="-1" id="formModal">
+  <div class="modal" tabindex="-1" id="addTaskModal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -35,20 +35,18 @@
             <div class="col-5"><input type="text" name="taskDueDateInput" id="taskDueDateInput"></div>
             <div class="col-10">Description</div>
             <div class="col-10"><textarea name="taskDescriptionInput" cols="44" id="taskDescriptionInput"></textarea></div>
-        
-        
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-primary" id="saveTaskBtn">Save changes</button>
         </div>
       </div>
     </div>
   </div>
   <div class="container">
     <div class="text-center mb-5">
-      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#formModal">Add Task</button>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add Task</button>
     </div>
     <!-- Todo: Create a modal with a form to add tasks -->
     <div class="row swim-lanes text-center justify-content-between">
@@ -58,7 +56,9 @@
             <h2 class="card-title mb-1">To Do</h2>
           </div>
           <div class="card-body bg-light">
-            <div id="todo-cards"></div>
+            <div id="todo-cards">
+              
+            </div>
           </div>
         </div>
       </div>
