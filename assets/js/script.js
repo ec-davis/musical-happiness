@@ -51,17 +51,13 @@ function initTaskObject(pTitle, pDueDate, pDescription) {
         title: pTitle,
         dueDate: pDueDate,
         description: pDescription,
-        status: enums.STATUS_TODO
-        
+        status: enums.STATUS_TODO 
     }
-    log(`newTask ${newTask.status}`);
     return newTask;
 }
 function saveTask(pTask) {
     fetchTaskList();
-    log(`taskList.length [${taskList.length}]`);
     taskList.push(pTask);
-    log(`taskList.length [${taskList.length}]`);
     localStorage.setItem(enums.TASK_LIST_IN_LCL_STORAGE, JSON.stringify(taskList));
 }
 function clearInputFields() {
@@ -77,7 +73,7 @@ function makeColumnsDroppable() {
 }
 function removeTaskFromStorage(pTaskId) {
     let indexToRemove;
-    log(`taskList length [${taskList.length}]`);
+    log(`removeTaskFromStorage: taskList length [${taskList.length}]`);
     for (const task of taskList) {
         log(`task ID [${task.taskId}]`);
         if (pTaskId == task.taskId) {
@@ -94,11 +90,11 @@ function removeTaskFromStorage(pTaskId) {
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
     event.preventDefault();
-    log(` ${event.target.dataset.taskid}`);
+    log(`handleDeleteTask taskId ${event.target.dataset.taskid}`);
 
     removeTaskFromStorage(event.target.dataset.taskid);
     //remove self from parent
-    //renderTaskList(taskList);
+    renderTaskList(taskList);
     
 }
 
@@ -128,14 +124,12 @@ function createTaskCard(task, status) {
 function renderTaskList(taskList) {
     if (null === taskList)
         return;
-    log(taskList);
     clearColumns();
 
     //for (let ii = 0; ii < taskList.length; ++ii) {
     for (const task of taskList) {
         if (null === task)
             break;
-        log(`task ${task}`);
         if (enums.STATUS_TODO == task.status) {
             toDoColumn.append(createTaskCard(task, task.status));
         } else if (enums.STATUS_WIP == task.status)
@@ -143,6 +137,7 @@ function renderTaskList(taskList) {
         else 
             log(`done ${task.title}`);
     }
+    $(".delete-btn").on('click',handleDeleteTask);
 }
 
 // Todo: create a function to handle adding a new task
@@ -185,5 +180,5 @@ $(document).ready(function () {
     if (taskList)
         renderTaskList(taskList);
     saveTaskBtn.on('click',handleAddTask);
-    $('.delete-btn').on('click',handleDeleteTask);
+  //  $(".delete-btn").on('click',handleDeleteTask);
 });
