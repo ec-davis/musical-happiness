@@ -52,11 +52,16 @@ function initTaskObject(pTitle, pDueDate, pDescription) {
         dueDate: pDueDate,
         description: pDescription,
         status: enums.STATUS_TODO
+        
     }
+    log(`newTask ${newTask.status}`);
+    return newTask;
 }
 function saveTask(pTask) {
     fetchTaskList();
+    log(`taskList.length [${taskList.length}]`);
     taskList.push(pTask);
+    log(`taskList.length [${taskList.length}]`);
     localStorage.setItem(enums.TASK_LIST_IN_LCL_STORAGE, JSON.stringify(taskList));
 }
 function clearInputFields() {
@@ -70,19 +75,43 @@ function makeColumnsDroppable() {
     inProgressColumn.droppable();
     doneColumn.sortable();
 }
+function removeTaskFromStorage(pTaskId) {
+    let indexToRemove;
+    log(`taskList length [${taskList.length}]`);
+    for (const task of taskList) {
+        log(`task ID [${task.taskId}]`);
+        if (pTaskId == task.taskId) {
+            indexToRemove = task;
+        }
+        taskList.splice(indexToRemove,1);
+        break;
+    }
+    log(`taskList length [${taskList.length}]`);
 
+    localStorage.setItem(enums.TASK_LIST_IN_LCL_STORAGE,JSON.stringify(taskList));
+}
 
+// Todo: create a function to handle deleting a task
+function handleDeleteTask(event){
+    event.preventDefault();
+    log(` ${event.target.dataset.taskid}`);
 
+    removeTaskFromStorage(event.target.dataset.taskid);
+    //remove self from parent
+    //renderTaskList(taskList);
+    
+}
 
 
 // create a task card element
 function createTaskCard(task, status) {
     const taskCard = $(`
         <div class="task-card alert">
-                <header>${task.title}</header>
-                <div>${task.status}</div>
-                <div>${task.dueDate}</div>
-                <div><button type="submit" id="task-${task.taskId}">Delete</button></div>
+                <header>Title: ${task.title}</header>
+                <div>ID: ${task.taskId}</div>
+                <div>Status: ${task.status}</div>
+                <div>Due Date: ${task.dueDate}</div>
+                <div><button type="submit" class="delete-btn" data-taskid="${task.taskId}" id="delete-${task.taskId}">Delete</button></div>
               </div>
     `);
     //taskCard.draggable();
@@ -99,11 +128,14 @@ function createTaskCard(task, status) {
 function renderTaskList(taskList) {
     if (null === taskList)
         return;
-
+    log(taskList);
     clearColumns();
 
-    for (let ii = 0; ii < taskList.length; ++ii) {
-        const task = taskList[ii];
+    //for (let ii = 0; ii < taskList.length; ++ii) {
+    for (const task of taskList) {
+        if (null === task)
+            break;
+        log(`task ${task}`);
         if (enums.STATUS_TODO == task.status) {
             toDoColumn.append(createTaskCard(task, task.status));
         } else if (enums.STATUS_WIP == task.status)
@@ -132,12 +164,6 @@ function handleAddTask(event){
     renderTaskList(taskList);     
 }
 
-// Todo: create a function to handle deleting a task
-function handleDeleteTask(event){
-
-
-}
-
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
 
@@ -158,5 +184,6 @@ $(document).ready(function () {
     fetchTaskList();
     if (taskList)
         renderTaskList(taskList);
+    saveTaskBtn.on('click',handleAddTask);
+    $('.delete-btn').on('click',handleDeleteTask);
 });
-saveTaskBtn.on('click',handleAddTask);
