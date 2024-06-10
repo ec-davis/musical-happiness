@@ -5,59 +5,136 @@ const taskDescriptionInput = $('#taskDescriptionInput');
 const addTaskModal = $('#addTaskModal');
 const saveTaskBtn = $('#saveTaskBtn');
 
+const toDoColumn = $('#todo-cards');
+const inProgressColumn = $('#in-progress-cards');
+const doneColumn = $('#done-cards');
+
+// DATA
+//enums
+const enums = {
+    TASK_LIST_IN_LCL_STORAGE: "taskList",
+    NEXT_ID: "nextId",
+    STATUS_TODO: "todo",
+    STATUS_WIP: "inProgress",
+    STATUS_DONE: "done",
+    CLASS_FUTURE: "alert-info",
+    CLASS_TODAY: "alert-warning",
+    CLASS_PAST_DUE: "alert-danger"
+}
+
 // Retrieve tasks and nextId from localStorage
-let taskList = JSON.parse(localStorage.getItem("tasks"));
-let nextId; // = JSON.parse(localStorage.getItem("nextId"));
+let taskList;
+// let nextId;
+
+/////////////////////////////////////
+// UTILITY FUNCTIONS
+
+function log(msg) {
+    console.log(msg);
+}
 
 // increment taskId or initialize it to 1 if it has yet to be initialized
 function generateTaskId() {
-    nextId = localStorage.getItem('nextId');
+    let nextId = localStorage.getItem(enums.NEXT_ID);
     ++nextId;
-    localStorage.setItem('nextId', nextId);
+    localStorage.setItem(enums.NEXT_ID, nextId);
+    return nextId;
+}
+function clearColumns() {
+    toDoColumn.text('');
+    inProgressColumn.text('');
+    doneColumn.text('');
+}
+function initTaskObject(pTitle, pDueDate, pDescription) {
+    const newTask = {
+        taskId: generateTaskId(),
+        title: pTitle,
+        dueDate: pDueDate,
+        description: pDescription,
+        status: enums.STATUS_TODO
+    }
+}
+function saveTask(pTask) {
+    fetchTaskList();
+    taskList.push(pTask);
+    localStorage.setItem(enums.TASK_LIST_IN_LCL_STORAGE, JSON.stringify(taskList));
+}
+function clearInputFields() {
+    taskTitleInput.val('');
+    taskDueDateInput.val('');
+    taskDescriptionInput.val('');
+}
+function makeColumnsDroppable() {
+    toDoColumn.sortable();
+    inProgressColumn.sortable();
+    inProgressColumn.droppable();
+    doneColumn.sortable();
 }
 
-// Todo: create a function to create a task card
-function createTaskCard(task) {
+
+
+
+
+// create a task card element
+function createTaskCard(task, status) {
+    const taskCard = $(`
+        <div class="task-card alert">
+                <header>${task.title}</header>
+                <div>${task.status}</div>
+                <div>${task.dueDate}</div>
+                <div><button type="submit" id="task-${task.taskId}">Delete</button></div>
+              </div>
+    `);
+    //taskCard.draggable();
+    
+
+    // TODO: add CSS class appropriate to today's date vs due date
+
+    return taskCard;
 
 }
+
 
 // Todo: create a function to render the task list and make cards draggable
-function renderTaskList() {
+function renderTaskList(taskList) {
+    if (null === taskList)
+        return;
 
+    clearColumns();
+
+    for (let ii = 0; ii < taskList.length; ++ii) {
+        const task = taskList[ii];
+        if (enums.STATUS_TODO == task.status) {
+            toDoColumn.append(createTaskCard(task, task.status));
+        } else if (enums.STATUS_WIP == task.status)
+            log(`wip ${task.title}`);
+        else 
+            log(`done ${task.title}`);
+    }
 }
 
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
-    console.log("handleAddTask");    
-    
     event.preventDefault();
-    const taskTitle = taskTitleInput.val();
-    const taskDueDate = taskDueDateInput.val();
-    const taskDescription = taskDescriptionInput.val();
+    // const taskTitle = taskTitleInput.val();
+    // const taskDueDate = taskDueDateInput.val();
+    // const taskDescription = taskDescriptionInput.val();
 
-    const newTask = {
-        title: taskTitle,
-        dueDate: taskDueDate,
-        description: taskDescription
-    }
+    const taskTitle = "hike uphill";
+    const taskDueDate = "1";
+    const taskDescription = "descriptionynoof";
 
-    let tasksArray = JSON.parse(localStorage.getItem('tasksArray'));
-    if (!tasksArray)
-        tasksArray = [];
-    tasksArray.push(newTask);
-    localStorage.setItem('tasksArray', JSON.stringify(tasksArray));
-
-    // clear the inputs and hide the dialog
-    taskTitleInput.val('');
-    taskDueDateInput.val('');
-    taskDescriptionInput.val('');
-    addTaskModal.modal('hide');       
+    const newTask = initTaskObject(taskTitle, taskDueDate, taskDescription);
+    saveTask(newTask);
+    clearInputFields();
+    // hide the dialog
+    addTaskModal.modal('hide');  
+    renderTaskList(taskList);     
 }
-
-
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
+
 
 }
 
@@ -68,10 +145,18 @@ function handleDrop(event, ui) {
 
 // USER INTERACTIONS
 
-
+function fetchTaskList() {
+    taskList = JSON.parse(localStorage.getItem(enums.TASK_LIST_IN_LCL_STORAGE));
+    if (!taskList)
+        taskList = [];
+}
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
     taskDueDateInput.datepicker();
+    makeColumnsDroppable();
+    fetchTaskList();
+    if (taskList)
+        renderTaskList(taskList);
 });
 saveTaskBtn.on('click',handleAddTask);
