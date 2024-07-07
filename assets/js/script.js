@@ -81,29 +81,29 @@ function createTaskCard(task, status) {
             <div><button type="submit" class="delete-btn" data-taskid="${task.taskId}" id="delete-${task.taskId}">Delete</button></div>
         </div>
     `);
+  setUrgencyClass(task, taskCard);
   taskCard.draggable({
     zIndex: 200,
     helper: "clone",
   });
 
-  // TODO: add CSS class appropriate to today's date vs due date
-
   return taskCard;
 }
 
-// Todo: create a function to render the task list and make cards draggable
+// render the task list and make cards draggable
 function renderTaskList(taskList) {
   if (null === taskList) return;
   clearColumns();
 
-  //for (let ii = 0; ii < taskList.length; ++ii) {
   for (const task of taskList) {
+    const taskCard = createTaskCard(task, task.status);
+
     if (null === task) break;
     if (enums.STATUS_TODO == task.status) {
-      toDoColumn.append(createTaskCard(task, task.status));
+      toDoColumn.append(taskCard);
     } else if (enums.STATUS_WIP == task.status)
-      inProgressColumn.append(createTaskCard(task, task.status));
-    else doneColumn.append(createTaskCard(task, task.status));
+      inProgressColumn.append(taskCard);
+    else doneColumn.append(taskCard);
   }
   $(".delete-btn").on("click", handleDeleteTask);
 }
