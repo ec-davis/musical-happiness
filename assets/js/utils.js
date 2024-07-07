@@ -11,3 +11,9 @@ function clearColumns() {
   inProgressColumn.text("");
   doneColumn.text("");
 }
+
+function clearInputFields() {
+  taskTitleInput.val("");
+  taskDueDateInput.val("");
+  taskDescriptionInput.val("");
+}
