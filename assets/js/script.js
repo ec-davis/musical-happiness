@@ -1,4 +1,5 @@
 // DEPENDENCIES
+
 const taskTitleInput = $("#taskTitleInput");
 const taskDueDateInput = $("#taskDueDateInput");
 const taskDescriptionInput = $("#taskDescriptionInput");
@@ -11,22 +12,6 @@ const inProgressColumn = $("#in-progress-cards");
 const doneColumn = $("#done-cards");
 
 // DATA
-//enums
-const enums = {
-  TASK_LIST_IN_LCL_STORAGE: "taskList",
-  NEXT_ID: "nextId",
-  STATUS_TODO: "to-do",
-  STATUS_WIP: "in-rogress",
-  STATUS_DONE: "done",
-
-  COLUMN_TODO_ID: "todo-cards",
-  COLUMN_INPROGRESS_ID: "in-progress-cards",
-  COLUMN_DONE_ID: "done-cards",
-
-  CLASS_FUTURE: "alert-info",
-  CLASS_TODAY: "alert-warning",
-  CLASS_PAST_DUE: "alert-danger",
-};
 
 // Retrieve tasks and nextId from localStorage
 let taskList;
@@ -36,31 +21,6 @@ let taskList;
 // UTILITY FUNCTIONS
 function log(msg) {
   console.log(msg);
-}
-
-// increment taskId or initialize it to 1 if it has yet to be initialized
-function generateTaskId() {
-  let nextId = localStorage.getItem(enums.NEXT_ID);
-  ++nextId;
-  localStorage.setItem(enums.NEXT_ID, nextId);
-  return nextId;
-}
-function clearColumns() {
-  toDoColumn.text("");
-  inProgressColumn.text("");
-  doneColumn.text("");
-}
-function getColumnIdFromStatus(pStatus) {
-  switch (pStatus) {
-    case enums.STATUS_TODO:
-      return enums.COLUMN_TODO_ID;
-    case enums.STATUS_WIP:
-      return enums.COLUMN_INPROGRESS_ID;
-    case enums.STATUS_DONE:
-      return enums.COLUMN_DONE_ID;
-    default:
-      return null;
-  }
 }
 
 function initTaskObject(pTitle, pDueDate, pDescription) {
@@ -223,5 +183,4 @@ $(document).ready(function () {
   fetchTaskList();
   if (taskList) renderTaskList(taskList);
   saveTaskBtn.on("click", handleAddTask);
-  //  $(".delete-btn").on('click',handleDeleteTask);
 });
