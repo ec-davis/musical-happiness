@@ -21,20 +21,6 @@ function log(msg) {
   alert(msg + " ARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRGH");
 }
 
-function initTaskObject(pTitle, pDueDate, pDescription) {
-  const newTaskId = generateTaskId();
-
-  const newTask = {
-    taskId: newTaskId,
-    elementId: `task-${newTaskId}`,
-    title: pTitle,
-    dueDate: pDueDate,
-    description: pDescription,
-    status: enums.STATUS_TODO,
-    currentColumn: getColumnIdFromStatus(enums.STATUS_TODO),
-  };
-  return newTask;
-}
 function saveTask(pTask) {
   fetchTaskList();
   taskList.push(pTask);
@@ -95,29 +81,29 @@ function createTaskCard(task, status) {
             <div><button type="submit" class="delete-btn" data-taskid="${task.taskId}" id="delete-${task.taskId}">Delete</button></div>
         </div>
     `);
+  setUrgencyClass(task, taskCard);
   taskCard.draggable({
     zIndex: 200,
     helper: "clone",
   });
 
-  // TODO: add CSS class appropriate to today's date vs due date
-
   return taskCard;
 }
 
-// Todo: create a function to render the task list and make cards draggable
+// render the task list and make cards draggable
 function renderTaskList(taskList) {
   if (null === taskList) return;
   clearColumns();
 
-  //for (let ii = 0; ii < taskList.length; ++ii) {
   for (const task of taskList) {
+    const taskCard = createTaskCard(task, task.status);
+
     if (null === task) break;
     if (enums.STATUS_TODO == task.status) {
-      toDoColumn.append(createTaskCard(task, task.status));
+      toDoColumn.append(taskCard);
     } else if (enums.STATUS_WIP == task.status)
-      inProgressColumn.append(createTaskCard(task, task.status));
-    else doneColumn.append(createTaskCard(task, task.status));
+      inProgressColumn.append(taskCard);
+    else doneColumn.append(taskCard);
   }
   $(".delete-btn").on("click", handleDeleteTask);
 }
@@ -139,15 +125,14 @@ function handleDeleteTask(event) {
   renderTaskList(taskList);
 }
 
-// Todo: create a function to handle adding a new task
+// handles the addition of a new task. Saves input from the model, hides the model and refreshes the task lists
 function handleAddTask(event) {
   event.preventDefault();
-  const taskTitle = taskTitleInput.val();
-  const taskDueDate = taskDueDateInput.val();
-  const taskDescription = taskDescriptionInput.val();
-
-  const newTask = initTaskObject(taskTitle, taskDueDate, taskDescription);
-  console.log(`newTask: ${newTask}`);
+  const newTask = initTaskObject(
+    taskTitleInput.val(),
+    taskDueDateInput.val(),
+    taskDescriptionInput.val()
+  );
 
   saveTask(newTask);
   clearInputFields();
@@ -156,7 +141,7 @@ function handleAddTask(event) {
   renderTaskList(taskList);
 }
 
-// Todo: create a function to handle dropping a task into a new status lane
+// Handles dropping a task into a new status lane
 function handleDrop(event, ui) {
   const droppedCard = ui.draggable;
   const receivingColumn = this;
@@ -167,10 +152,9 @@ function handleDrop(event, ui) {
   console.log(droppedCard[0].status);
   console.log(droppedCard[0].status.val());
   const droppedCardId = droppedCard[0].id;
-  //let previousColumnCards =
 }
 
-// Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+// When the DOM is ready, set up a few things
 $(document).ready(function () {
   taskDueDateInput.datepicker();
   makeColumnsDroppable();
