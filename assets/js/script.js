@@ -1,4 +1,5 @@
 // DEPENDENCIES
+
 const taskTitleInput = $("#taskTitleInput");
 const taskDueDateInput = $("#taskDueDateInput");
 const taskDescriptionInput = $("#taskDescriptionInput");
@@ -11,56 +12,13 @@ const inProgressColumn = $("#in-progress-cards");
 const doneColumn = $("#done-cards");
 
 // DATA
-//enums
-const enums = {
-  TASK_LIST_IN_LCL_STORAGE: "taskList",
-  NEXT_ID: "nextId",
-  STATUS_TODO: "to-do",
-  STATUS_WIP: "in-rogress",
-  STATUS_DONE: "done",
-
-  COLUMN_TODO_ID: "todo-cards",
-  COLUMN_INPROGRESS_ID: "in-progress-cards",
-  COLUMN_DONE_ID: "done-cards",
-
-  CLASS_FUTURE: "alert-info",
-  CLASS_TODAY: "alert-warning",
-  CLASS_PAST_DUE: "alert-danger",
-};
-
-// Retrieve tasks and nextId from localStorage
 let taskList;
-// let nextId;
 
 /////////////////////////////////////
 // UTILITY FUNCTIONS
 function log(msg) {
-  console.log(msg);
-}
-
-// increment taskId or initialize it to 1 if it has yet to be initialized
-function generateTaskId() {
-  let nextId = localStorage.getItem(enums.NEXT_ID);
-  ++nextId;
-  localStorage.setItem(enums.NEXT_ID, nextId);
-  return nextId;
-}
-function clearColumns() {
-  toDoColumn.text("");
-  inProgressColumn.text("");
-  doneColumn.text("");
-}
-function getColumnIdFromStatus(pStatus) {
-  switch (pStatus) {
-    case enums.STATUS_TODO:
-      return enums.COLUMN_TODO_ID;
-    case enums.STATUS_WIP:
-      return enums.COLUMN_INPROGRESS_ID;
-    case enums.STATUS_DONE:
-      return enums.COLUMN_DONE_ID;
-    default:
-      return null;
-  }
+  console.log(msg + " ARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRGH");
+  alert(msg + " ARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRGH");
 }
 
 function initTaskObject(pTitle, pDueDate, pDescription) {
@@ -85,11 +43,7 @@ function saveTask(pTask) {
     JSON.stringify(taskList)
   );
 }
-function clearInputFields() {
-  taskTitleInput.val("");
-  taskDueDateInput.val("");
-  taskDescriptionInput.val("");
-}
+
 function makeColumnsSortable() {
   toDoColumn.sortable();
   inProgressColumn.sortable();
@@ -110,47 +64,23 @@ function makeColumnsDroppable() {
   });
 }
 
-// Todo: create a function to handle dropping a task into a new status lane
-function handleDrop(event, ui) {
-  const droppedCard = ui.draggable;
-  const receivingColumn = this;
-  log(`dropped on ${receivingColumn.id}`);
-  log(`droppedCard ${droppedCard.text()}`);
-  log(droppedCard);
-  log(droppedCard[0].id);
-  log(droppedCard[0].status);
-  log(droppedCard[0].status.val());
-  const droppedCardId = droppedCard[0].id;
-  //let previousColumnCards =
-}
-
 function removeTaskFromStorage(pTaskId) {
   let indexToRemove;
-  log(`removeTaskFromStorage: taskList length [${taskList.length}]`);
+  console.log(`removeTaskFromStorage: taskList length [${taskList.length}]`);
   for (const task of taskList) {
-    log(`task ID [${task.taskId}]`);
+    console.log(`task ID [${task.taskId}]`);
     if (pTaskId == task.taskId) {
       indexToRemove = task;
     }
     taskList.splice(indexToRemove, 1);
     break;
   }
-  log(`taskList length [${taskList.length}]`);
+  console.log(`taskList length [${taskList.length}]`);
 
   localStorage.setItem(
     enums.TASK_LIST_IN_LCL_STORAGE,
     JSON.stringify(taskList)
   );
-}
-
-// Todo: create a function to handle deleting a task
-function handleDeleteTask(event) {
-  event.preventDefault();
-  log(`handleDeleteTask taskId ${event.target.dataset.taskid}`);
-
-  removeTaskFromStorage(event.target.dataset.taskid);
-  //remove self from parent
-  renderTaskList(taskList);
 }
 
 // create a task card element
@@ -192,6 +122,23 @@ function renderTaskList(taskList) {
   $(".delete-btn").on("click", handleDeleteTask);
 }
 
+function fetchTaskList() {
+  taskList = JSON.parse(localStorage.getItem(enums.TASK_LIST_IN_LCL_STORAGE));
+  if (!taskList) taskList = [];
+}
+
+//////////////////////////
+// USER INTERACTIONS
+// HANDLERS
+function handleDeleteTask(event) {
+  event.preventDefault();
+  console.log(`handleDeleteTask taskId ${event.target.dataset.taskid}`);
+
+  removeTaskFromStorage(event.target.dataset.taskid);
+  //remove self from parent
+  renderTaskList(taskList);
+}
+
 // Todo: create a function to handle adding a new task
 function handleAddTask(event) {
   event.preventDefault();
@@ -200,7 +147,7 @@ function handleAddTask(event) {
   const taskDescription = taskDescriptionInput.val();
 
   const newTask = initTaskObject(taskTitle, taskDueDate, taskDescription);
-  log(`newTask: ${newTask}`);
+  console.log(`newTask: ${newTask}`);
 
   saveTask(newTask);
   clearInputFields();
@@ -209,11 +156,18 @@ function handleAddTask(event) {
   renderTaskList(taskList);
 }
 
-// USER INTERACTIONS
-
-function fetchTaskList() {
-  taskList = JSON.parse(localStorage.getItem(enums.TASK_LIST_IN_LCL_STORAGE));
-  if (!taskList) taskList = [];
+// Todo: create a function to handle dropping a task into a new status lane
+function handleDrop(event, ui) {
+  const droppedCard = ui.draggable;
+  const receivingColumn = this;
+  console.log(`dropped on ${receivingColumn.id}`);
+  console.log(`droppedCard ${droppedCard.text()}`);
+  console.log(droppedCard);
+  console.log(droppedCard[0].id);
+  console.log(droppedCard[0].status);
+  console.log(droppedCard[0].status.val());
+  const droppedCardId = droppedCard[0].id;
+  //let previousColumnCards =
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
@@ -223,5 +177,4 @@ $(document).ready(function () {
   fetchTaskList();
   if (taskList) renderTaskList(taskList);
   saveTaskBtn.on("click", handleAddTask);
-  //  $(".delete-btn").on('click',handleDeleteTask);
 });
