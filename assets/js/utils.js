@@ -17,3 +17,18 @@ function clearInputFields() {
   taskDueDateInput.val("");
   taskDescriptionInput.val("");
 }
+
+function initTaskObject(pTitle, pDueDate, pDescription) {
+  const newTaskId = generateTaskId();
+
+  const newTask = {
+    taskId: newTaskId,
+    elementId: `task-${newTaskId}`,
+    title: pTitle,
+    dueDate: pDueDate,
+    description: pDescription,
+    status: enums.STATUS_TODO,
+    currentColumn: getColumnIdFromStatus(enums.STATUS_TODO),
+  };
+  return newTask;
+}

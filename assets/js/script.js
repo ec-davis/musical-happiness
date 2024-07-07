@@ -21,20 +21,6 @@ function log(msg) {
   alert(msg + " ARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRGH");
 }
 
-function initTaskObject(pTitle, pDueDate, pDescription) {
-  const newTaskId = generateTaskId();
-
-  const newTask = {
-    taskId: newTaskId,
-    elementId: `task-${newTaskId}`,
-    title: pTitle,
-    dueDate: pDueDate,
-    description: pDescription,
-    status: enums.STATUS_TODO,
-    currentColumn: getColumnIdFromStatus(enums.STATUS_TODO),
-  };
-  return newTask;
-}
 function saveTask(pTask) {
   fetchTaskList();
   taskList.push(pTask);
@@ -139,15 +125,14 @@ function handleDeleteTask(event) {
   renderTaskList(taskList);
 }
 
-// Todo: create a function to handle adding a new task
+// handles the addition of a new task. Saves input from the model, hides the model and refreshes the task lists
 function handleAddTask(event) {
   event.preventDefault();
-  const taskTitle = taskTitleInput.val();
-  const taskDueDate = taskDueDateInput.val();
-  const taskDescription = taskDescriptionInput.val();
-
-  const newTask = initTaskObject(taskTitle, taskDueDate, taskDescription);
-  console.log(`newTask: ${newTask}`);
+  const newTask = initTaskObject(
+    taskTitleInput.val(),
+    taskDueDateInput.val(),
+    taskDescriptionInput.val()
+  );
 
   saveTask(newTask);
   clearInputFields();
@@ -167,7 +152,6 @@ function handleDrop(event, ui) {
   console.log(droppedCard[0].status);
   console.log(droppedCard[0].status.val());
   const droppedCardId = droppedCard[0].id;
-  //let previousColumnCards =
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
