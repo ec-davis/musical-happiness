@@ -158,6 +158,7 @@ function createTaskCard(task, status) {
   const taskCard = $(`
         <div class="task-card alert" id="task-${task.taskId}">
             <header>Title: ${task.title}</header>
+            <div>Desc: ${task.description}</div>
             <div>ID: ${task.taskId}</div>
             <div>Status: ${task.status}</div>
             <div>Due Date: ${task.dueDate}</div>
@@ -200,7 +201,7 @@ function handleAddTask(event) {
 
   const newTask = initTaskObject(taskTitle, taskDueDate, taskDescription);
   log(`newTask: ${newTask}`);
-  log(newTask);
+
   saveTask(newTask);
   clearInputFields();
   // hide the dialog
